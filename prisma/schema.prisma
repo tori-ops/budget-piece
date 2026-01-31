@@ -16,12 +16,30 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Relations
+  profile          Profile?
   events           Event[]
   eventMembers     EventMember[]
   userEventStates  UserEventState[]
   budgetActions    BudgetAction[]
 
   @@map("users")
+}
+
+// Profile model (user profile data)
+model Profile {
+  id          String   @id
+  displayName String?
+  avatarUrl   String?
+  bio         String?
+  phone       String?
+  isPlanner   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  user        User     @relation(fields: [id], references: [id], onDelete: Cascade)
+
+  @@map("profiles")
 }
 
 // Event (wedding event)
