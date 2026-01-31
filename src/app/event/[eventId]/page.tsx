@@ -28,80 +28,39 @@ export default async function EventPage({ params }: EventPageProps) {
       redirect('/');
     }
 
-    // Get event details
-    const event = await prisma.event.findUnique({
-      where: { id: eventId },
+    // Get user event state to check if they've seen intro
+    const userEventState = await prisma.userEventState.findUnique({
+      where: {
+        eventId_userId: {
+          eventId,
+          userId,
+        },
+      },
     });
 
-    if (!event) {
-      redirect('/');
+    // Check if they've seen the intro
+    if (!userEventState?.hasSeenIntro) {
+      redirect(`/event/${eventId}/intro`);
     }
 
-    return (
-      <div className="min-h-screen bg-gray-50 p-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-lg shadow p-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">{event.title}</h1>
+    // Check if event has any allocations (budget scenarios with allocations)
+    const allocations = await prisma.categoryAllocation.findFirst({
+      where: {
+        scenario: {
+          eventId,
+        },
+      },
+    });
 
-            <div className="grid grid-cols-2 gap-6 mb-8">
-              <div>
-                <p className="text-sm font-semibold text-gray-600">Wedding Date</p>
-                <p className="text-lg text-gray-900">
-                  {new Date(event.weddingDate).toLocaleDateString('en-US', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-600">Timezone</p>
-                <p className="text-lg text-gray-900">{event.timezone}</p>
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-600">Status</p>
-                <p className="text-lg text-gray-900 capitalize">
-                  <span
-                    className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                      event.status === 'ACTIVE'
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-yellow-100 text-yellow-800'
-                    }`}
-                  >
-                    {event.status}
-                  </span>
-                </p>
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-600">Your Role</p>
-                <p className="text-lg text-gray-900">{member.role}</p>
-              </div>
-            </div>
+    // If no allocations exist, send to setup
+    if (!allocations) {
+      redirect(`/event/${eventId}/setup/type`);
+    }
 
-            <div className="p-6 bg-blue-50 border border-blue-300 rounded-lg mb-8">
-              <p className="text-sm text-blue-900">
-                <strong>Event ID:</strong> {eventId}
-              </p>
-              <p className="text-xs text-blue-800 mt-2">
-                This is a placeholder. Routing logic will direct you to the intro or setup wizard next.
-              </p>
-            </div>
-
-            <div className="space-y-4">
-              <a
-                href="/events/new"
-                className="inline-block px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
-              >
-                ← Back to Create Event
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    // Otherwise, show dashboard
+    redirect(`/event/${eventId}/dashboard`);
   } catch (error) {
-    console.error('Error loading event:', error);
+    console.error('Event page error:', error);
     redirect('/');
   }
 }
