@@ -71,26 +71,22 @@ export default async function LoginPage() {
 
             <div className="pt-4 space-y-3">
               <button
-                className="w-full py-3 px-4 rounded-lg font-medium transition-all duration-200"
+                className="w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 hover:opacity-90"
                 style={{ 
                   backgroundColor: '#274E13',
                   color: '#D0CEB5',
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.9')}
-                onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
               >
                 Login with Email
               </button>
 
               <button
-                className="w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 border-2"
+                className="w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 border-2 hover:bg-opacity-20 hover:bg-green-900"
                 style={{ 
                   borderColor: '#274E13',
                   color: '#274E13',
                   backgroundColor: 'transparent'
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#D0CEB5')}
-                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
               >
                 Sign Up
               </button>
