@@ -67,11 +67,10 @@ export async function createEvent(input: CreateEventInput): Promise<CreateEventR
     purgeDate.setMonth(purgeDate.getMonth() + 6);
 
     // Create all records in a transaction
-    const event = await prisma.$transaction(async (tx) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const transactionClient = tx as any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const event = await prisma.$transaction(async (tx: any) => {
       // 1. Create Event
-      const newEvent = await transactionClient.event.create({
+      const newEvent = await tx.event.create({
         data: {
           title: title.trim(),
           weddingDate: weddingDateObj,
@@ -83,7 +82,7 @@ export async function createEvent(input: CreateEventInput): Promise<CreateEventR
       });
 
       // 2. Create EventMember (creator as COUPLE_OWNER)
-      await transactionClient.eventMember.create({
+      await tx.eventMember.create({
         data: {
           eventId: newEvent.id,
           userId,
@@ -92,7 +91,7 @@ export async function createEvent(input: CreateEventInput): Promise<CreateEventR
       });
 
       // 3. Create UserEventState (hasSeenIntro=false)
-      await transactionClient.userEventState.create({
+      await tx.userEventState.create({
         data: {
           eventId: newEvent.id,
           userId,
@@ -102,7 +101,7 @@ export async function createEvent(input: CreateEventInput): Promise<CreateEventR
       });
 
       // 4. Create primary BudgetScenario
-      await transactionClient.budgetScenario.create({
+      await tx.budgetScenario.create({
         data: {
           eventId: newEvent.id,
           name: 'Baseline',
