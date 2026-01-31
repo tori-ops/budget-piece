@@ -1,5 +1,3 @@
-'use server';
-
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -38,6 +36,7 @@ export async function createSupabaseServerClient() {
  * Redirects to /login if not authenticated
  */
 export async function getCurrentUserId(): Promise<string> {
+  'use server';
   const supabase = await createSupabaseServerClient();
   
   const {
@@ -57,6 +56,7 @@ export async function getCurrentUserId(): Promise<string> {
  * Throws 403 error if not a member
  */
 export async function requireEventMember(eventId: string): Promise<string> {
+  'use server';
   const userId = await getCurrentUserId();
 
   const member = await prisma.eventMember.findUnique({
