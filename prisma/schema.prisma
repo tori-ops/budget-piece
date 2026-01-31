@@ -1,0 +1,187 @@
+// Wedding Budget Tool Schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// User model (managed by Supabase Auth)
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  events           Event[]
+  eventMembers     EventMember[]
+  userEventStates  UserEventState[]
+  budgetActions    BudgetAction[]
+
+  @@map("users")
+}
+
+// Event (wedding event)
+model Event {
+  id                String   @id @default(uuid())
+  title             String
+  weddingDate       DateTime
+  timezone          String   @default("UTC")
+  purgeReceiptsAt   DateTime?
+  status            String   @default("DRAFT") // DRAFT, ACTIVE, COMPLETED
+  createdByUserId   String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  createdBy         User               @relation(fields: [createdByUserId], references: [id], onDelete: Cascade)
+  members           EventMember[]
+  userEventStates   UserEventState[]
+  scenarios         BudgetScenario[]
+  eventCategories   EventCategory[]
+
+  @@index([createdByUserId])
+  @@map("events")
+}
+
+// EventMember (role-based membership)
+model EventMember {
+  id        String   @id @default(uuid())
+  eventId   String
+  userId    String
+  role      String   @default("HELPER_VIEWER") // COUPLE_OWNER, COUPLE_EDITOR, HELPER_EDITOR, HELPER_VIEWER, PLANNER_READONLY
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+  @@index([eventId])
+  @@index([userId])
+  @@map("event_members")
+}
+
+// UserEventState (tracks onboarding progress per user per event)
+model UserEventState {
+  id              String   @id @default(uuid())
+  eventId         String
+  userId          String
+  hasSeenIntro    Boolean  @default(false)
+  seenIntroAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  event           Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+  @@index([eventId])
+  @@index([userId])
+  @@map("user_event_states")
+}
+
+// BudgetScenario (different budget scenarios for the same event)
+model BudgetScenario {
+  id                String   @id @default(uuid())
+  eventId           String
+  name              String
+  isPrimary         Boolean  @default(false)
+  inputs            Json     @default("{}")  // { weddingType, enabledCategoryIds?, priorityTiers? }
+  totalBudgetCents  Int      @default(3000000) // Default $30,000
+  currency          String   @default("USD")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  event             Event                @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  allocations       CategoryAllocation[]
+  actions           BudgetAction[]
+
+  @@unique([eventId, name])
+  @@index([eventId])
+  @@index([isPrimary])
+  @@map("budget_scenarios")
+}
+
+// Category (global defaults + event-scoped custom categories)
+model Category {
+  id                String   @id @default(uuid())
+  eventId           String?  // null = global default, non-null = event-scoped custom
+  name              String
+  group             String   @default("CORE") // CORE, ADMIN, ENHANCEMENTS, SAFETY_NET
+  baseWeight        Float    @default(0.30)
+  isGlobal          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  eventCategories   EventCategory[]
+  allocations       CategoryAllocation[]
+
+  @@index([eventId])
+  @@index([isGlobal])
+  @@map("categories")
+}
+
+// EventCategory (tracks which categories are enabled for an event)
+model EventCategory {
+  id        String   @id @default(uuid())
+  eventId   String
+  categoryId String
+  isEnabled Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  category  Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, categoryId])
+  @@index([eventId])
+  @@index([categoryId])
+  @@map("event_categories")
+}
+
+// CategoryAllocation (allocation of budget to a category in a specific scenario)
+model CategoryAllocation {
+  id          String   @id @default(uuid())
+  scenarioId  String
+  categoryId  String
+  allocatedCents Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  scenario    BudgetScenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+  category    Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([scenarioId, categoryId])
+  @@index([scenarioId])
+  @@index([categoryId])
+  @@map("category_allocations")
+}
+
+// BudgetAction (audit trail of budget modifications)
+model BudgetAction {
+  id                String   @id @default(uuid())
+  scenarioId        String
+  type              String   // GENERATE_BASELINE, MANUAL_ADJUST, etc.
+  beforeSnapshot    Json?    // nullable for initial generation
+  afterSnapshot     Json     // includes allocations, totals, etc.
+  createdByUserId   String
+  createdAt         DateTime @default(now())
+
+  // Relations
+  scenario          BudgetScenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+  createdBy         User           @relation(fields: [createdByUserId], references: [id], onDelete: Cascade)
+
+  @@index([scenarioId])
+  @@index([createdByUserId])
+  @@map("budget_actions")
+}
