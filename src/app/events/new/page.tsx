@@ -72,13 +72,13 @@ export default function NewEventPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 p-4 sm:p-8">
+    <div className="min-h-screen p-4 sm:p-8" style={{ backgroundColor: '#D0CEB5' }}>
       <div className="max-w-2xl mx-auto">
         <div className="bg-white rounded-lg shadow-lg p-8">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">Create Wedding Event</h1>
-            <p className="text-gray-600">Start planning your perfect wedding budget</p>
+            <h1 className="text-4xl font-bold mb-2" style={{ color: '#274E13' }}>Create Wedding Event</h1>
+            <p style={{ color: '#274E13' }}>Start planning your perfect wedding budget</p>
           </div>
 
           {/* Error Message */}
@@ -92,7 +92,7 @@ export default function NewEventPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Title */}
             <div>
-              <label htmlFor="title" className="block text-sm font-semibold text-gray-700 mb-2">
+              <label htmlFor="title" className="block text-sm font-semibold mb-2" style={{ color: '#274E13' }}>
                 Event Title
               </label>
               <input
@@ -102,15 +102,16 @@ export default function NewEventPage() {
                 placeholder="e.g., Sarah & John's Wedding"
                 required
                 maxLength={120}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:border-transparent text-black"
+                style={{ '--tw-ring-color': '#274E13' } as React.CSSProperties}
                 disabled={loading}
               />
-              <p className="text-xs text-gray-500 mt-1">Max 120 characters</p>
+              <p className="text-xs mt-1" style={{ color: '#274E13' }}>Max 120 characters</p>
             </div>
 
             {/* Wedding Date */}
             <div>
-              <label htmlFor="weddingDate" className="block text-sm font-semibold text-gray-700 mb-2">
+              <label htmlFor="weddingDate" className="block text-sm font-semibold mb-2" style={{ color: '#274E13' }}>
                 Wedding Date
               </label>
               <input
@@ -118,24 +119,26 @@ export default function NewEventPage() {
                 name="weddingDate"
                 type="date"
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:border-transparent text-black"
+                style={{ '--tw-ring-color': '#274E13' } as React.CSSProperties}
                 disabled={loading}
               />
             </div>
 
             {/* Timezone */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold mb-2" style={{ color: '#274E13' }}>
                 Timezone
               </label>
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-sm text-gray-600">
+                <span className="text-sm" style={{ color: '#274E13' }}>
                   Detected: <span className="font-medium">{detectedTimezone}</span>
                 </span>
                 <button
                   type="button"
                   onClick={() => setEditingTimezone(!editingTimezone)}
-                  className="text-xs text-purple-600 hover:text-purple-700 underline"
+                  className="text-xs underline"
+                  style={{ color: '#274E13' }}
                   disabled={loading}
                 >
                   {editingTimezone ? 'done' : 'change'}
@@ -148,7 +151,8 @@ export default function NewEventPage() {
                   type="text"
                   placeholder="e.g., America/New_York or UTC"
                   defaultValue={detectedTimezone}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:border-transparent text-black"
+                  style={{ '--tw-ring-color': '#274E13' } as React.CSSProperties}
                   disabled={loading}
                 />
               ) : (
@@ -162,11 +166,11 @@ export default function NewEventPage() {
 
             {/* Total Budget */}
             <div>
-              <label htmlFor="totalBudgetCents" className="block text-sm font-semibold text-gray-700 mb-2">
+              <label htmlFor="totalBudgetCents" className="block text-sm font-semibold mb-2" style={{ color: '#274E13' }}>
                 Total Wedding Budget
               </label>
               <div className="relative">
-                <span className="absolute left-4 top-3 text-gray-600 text-lg">$</span>
+                <span className="absolute left-4 top-3 text-lg" style={{ color: '#274E13' }}>$</span>
                 <input
                   id="totalBudgetCents"
                   name="totalBudgetCents"
@@ -175,22 +179,26 @@ export default function NewEventPage() {
                   required
                   min="1"
                   max="1000000"
-                  className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:border-transparent text-black"
+                  style={{ '--tw-ring-color': '#274E13' } as React.CSSProperties}
                   disabled={loading}
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-1">Maximum $1,000,000</p>
+              <p className="text-xs mt-1" style={{ color: '#274E13' }}>Maximum $1,000,000</p>
             </div>
 
             {/* Submit Button */}
             <button
               type="submit"
               disabled={loading}
-              className={`w-full py-3 px-6 font-semibold rounded-lg transition-all ${
+              className={`w-full py-3 px-6 font-semibold rounded-lg transition-all text-white ${
                 loading
-                  ? 'bg-gray-400 cursor-not-allowed text-white'
-                  : 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700'
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'hover:opacity-90'
               }`}
+              style={{
+                backgroundColor: loading ? undefined : '#274E13',
+              }}
             >
               {loading ? (
                 <div className="flex items-center justify-center gap-2">
