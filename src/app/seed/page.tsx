@@ -1,6 +1,6 @@
 'use client';
 
-import { seedMasterCategories } from '@/lib/seedCategories';
+import { seedMasterCategoriesAction } from '@/app/actions/seedCategories';
 import { useState } from 'react';
 
 export default function SeedPage() {
@@ -10,7 +10,7 @@ export default function SeedPage() {
   const handleSeed = async () => {
     setLoading(true);
     try {
-      const res = await seedMasterCategories();
+      const res = await seedMasterCategoriesAction();
       setResult(res);
     } catch (error) {
       setResult({

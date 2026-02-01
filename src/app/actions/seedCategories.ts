@@ -1,3 +1,5 @@
+'use server';
+
 import { prisma } from '@/lib/prisma';
 
 const MASTER_CATEGORIES = [
@@ -41,9 +43,8 @@ const MASTER_CATEGORIES = [
 
 /**
  * Seed the master category catalog (27 global categories)
- * Only call once or idempotently
  */
-export async function seedMasterCategories() {
+export async function seedMasterCategoriesAction() {
   try {
     for (const cat of MASTER_CATEGORIES) {
       await prisma.category.upsert({
@@ -58,7 +59,6 @@ export async function seedMasterCategories() {
         },
       });
     }
-    console.log(`✅ Seeded ${MASTER_CATEGORIES.length} master categories`);
     return { success: true, count: MASTER_CATEGORIES.length };
   } catch (error) {
     console.error('❌ Failed to seed categories:', error);
