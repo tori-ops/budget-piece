@@ -24,7 +24,14 @@ export async function createEvent(input: CreateEventInput): Promise<CreateEventR
     // Authenticate user
     const userId = await getCurrentUserId();
     
+    console.log('createEvent - userId:', userId);
+    
     if (!userId) {
+      // Try to get user from Supabase directly for debugging
+      const supabase = await createSupabaseServerClient();
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      console.log('createEvent - direct auth check - authUser:', authUser?.id, authUser?.email);
+      
       return { success: false, error: 'Not authenticated. Please log in.' };
     }
 

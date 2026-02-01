@@ -37,13 +37,20 @@ export async function createSupabaseServerClient() {
  */
 export async function getCurrentUserId(): Promise<string | null> {
   'use server';
-  const supabase = await createSupabaseServerClient();
-  
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  try {
+    const supabase = await createSupabaseServerClient();
+    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    
+    console.log('getCurrentUserId - user:', user?.id, user?.email);
 
-  return user?.id ?? null;
+    return user?.id ?? null;
+  } catch (error) {
+    console.error('getCurrentUserId - error:', error);
+    return null;
+  }
 }
 
 /**
