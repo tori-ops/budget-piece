@@ -66,13 +66,21 @@ export default function NewEventPage() {
       });
 
       if (result.success && result.eventId) {
-        // Navigate to event page
-        router.push(`/event/${result.eventId}`);
+        // Navigate to event page - use setTimeout to ensure navigation happens after response
+        setTimeout(() => {
+          router.push(`/event/${result.eventId}`);
+        }, 0);
       } else {
         setError(result.error || 'Failed to create event');
         setLoading(false);
       }
     } catch (err) {
+      console.error('Create event error:', err);
+      // Filter out NEXT_REDIRECT errors which are expected
+      if (err instanceof Error && err.message.includes('NEXT_REDIRECT')) {
+        // This is expected from the server action, ignore it
+        return;
+      }
       setError(err instanceof Error ? err.message : 'Failed to create event');
       setLoading(false);
     }
