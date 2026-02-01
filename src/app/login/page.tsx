@@ -34,10 +34,12 @@ export default function LoginPage() {
         setError(authError.message);
       } else {
         setMessage('Login successful! Redirecting...');
+        console.log('Login successful, session should be set');
         // Wait for session to be established, then do a hard refresh
         setTimeout(() => {
+          console.log('Refreshing page with hard refresh');
           window.location.href = '/';
-        }, 1000);
+        }, 2000);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');

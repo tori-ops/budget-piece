@@ -8,6 +8,11 @@ import { prisma } from '@/lib/prisma';
  */
 export async function createSupabaseServerClient() {
   const cookieStore = await cookies();
+  const allCookies = cookieStore.getAll();
+  
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[AUTH] createSupabaseServerClient - cookies available:', allCookies.map(c => c.name));
+  }
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
