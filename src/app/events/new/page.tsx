@@ -58,13 +58,20 @@ export default function NewEventPage() {
     }
 
     try {
-      await createEvent({
+      const result = await createEvent({
         title,
         weddingDate,
         timezone,
         totalBudgetCents,
       });
-      // Redirect happens in server action
+
+      if (result.success && result.eventId) {
+        // Navigate to event page
+        router.push(`/event/${result.eventId}`);
+      } else {
+        setError(result.error || 'Failed to create event');
+        setLoading(false);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create event');
       setLoading(false);

@@ -2,7 +2,6 @@
 
 import { prisma } from '@/lib/prisma';
 import { getCurrentUserId } from '@/lib/auth';
-import { redirect } from 'next/navigation';
 
 export interface CreateEventInput {
   title: string;
@@ -115,8 +114,11 @@ export async function createEvent(input: CreateEventInput): Promise<CreateEventR
       return newEvent;
     });
 
-    // Redirect to event page
-    redirect(`/event/${event.id}`);
+    // Return success with eventId (don't use redirect here)
+    return {
+      success: true,
+      eventId: event.id,
+    };
   } catch (error) {
     console.error('Error creating event:', error);
     return {
