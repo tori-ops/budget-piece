@@ -34,7 +34,10 @@ export default function LoginPage() {
         setError(authError.message);
       } else {
         setMessage('Login successful! Redirecting...');
-        setTimeout(() => router.push('/'), 1500);
+        // Wait for session to be established, then do a hard refresh
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 1000);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
