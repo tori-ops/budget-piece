@@ -23,6 +23,10 @@ export async function createEvent(input: CreateEventInput): Promise<CreateEventR
   try {
     // Authenticate user
     const userId = await getCurrentUserId();
+    
+    if (!userId) {
+      return { success: false, error: 'Not authenticated. Please log in.' };
+    }
 
     // Validate input
     const { title, weddingDate, timezone, totalBudgetCents } = input;

@@ -13,6 +13,10 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
 
   try {
     const userId = await getCurrentUserId();
+    
+    if (!userId) {
+      redirect('/login');
+    }
 
     // Verify user is member of this event
     const member = await prisma.eventMember.findUnique({

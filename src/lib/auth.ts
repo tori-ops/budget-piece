@@ -33,9 +33,9 @@ export async function createSupabaseServerClient() {
 
 /**
  * Get the current authenticated user's ID
- * Redirects to /login if not authenticated
+ * Returns null if not authenticated (doesn't redirect - let caller handle it)
  */
-export async function getCurrentUserId(): Promise<string> {
+export async function getCurrentUserId(): Promise<string | null> {
   'use server';
   const supabase = await createSupabaseServerClient();
   
@@ -43,11 +43,7 @@ export async function getCurrentUserId(): Promise<string> {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
-    redirect('/login');
-  }
-
-  return user.id;
+  return user?.id ?? null;
 }
 
 /**
@@ -58,6 +54,10 @@ export async function getCurrentUserId(): Promise<string> {
 export async function requireEventMember(eventId: string): Promise<string> {
   'use server';
   const userId = await getCurrentUserId();
+  
+  if (!userId) {
+    throw new Error('Not authenticated');
+  }
 
   const member = await prisma.eventMember.findUnique({
     where: {
