@@ -1,7 +1,7 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
-import { getCurrentUserId } from '@/lib/auth';
+import { getCurrentUserId, createSupabaseServerClient } from '@/lib/auth';
 
 export interface CreateEventInput {
   title: string;
@@ -27,6 +27,21 @@ export async function createEvent(input: CreateEventInput): Promise<CreateEventR
     if (!userId) {
       return { success: false, error: 'Not authenticated. Please log in.' };
     }
+
+    // Get user email from Supabase Auth
+    const supabase = await createSupabaseServerClient();
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+    
+    if (!authUser?.email) {
+      return { success: false, error: 'Unable to retrieve user email' };
+    }
+
+    // Ensure user exists in database (upsert)
+    await prisma.user.upsert({
+      where: { id: userId },
+      update: {},
+      create: { id: userId, email: authUser.email },
+    });
 
     // Validate input
     const { title, weddingDate, timezone, totalBudgetCents } = input;
