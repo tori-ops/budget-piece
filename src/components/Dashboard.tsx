@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { logout } from '@/app/actions/logout';
 
 interface Event {
   id: string;
@@ -67,9 +68,7 @@ export function Dashboard({ events }: DashboardProps) {
               + New Event
             </button>
             <button
-              onClick={() => {
-                // Add logout functionality
-              }}
+              onClick={() => logout()}
               className="px-4 py-2 rounded-lg font-medium border-2 transition-all duration-300 hover:opacity-80"
               style={{ color: '#274E13', borderColor: '#274E13' }}
             >
