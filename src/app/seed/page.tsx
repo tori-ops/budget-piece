@@ -1,6 +1,6 @@
 'use client';
 
-import { seedGlobalCategories } from '@/app/actions/seed';
+import { seedMasterCategories } from '@/lib/seedCategories';
 import { useState } from 'react';
 
 export default function SeedPage() {
@@ -10,12 +10,12 @@ export default function SeedPage() {
   const handleSeed = async () => {
     setLoading(true);
     try {
-      const res = await seedGlobalCategories();
+      const res = await seedMasterCategories();
       setResult(res);
     } catch (error) {
       setResult({
         success: false,
-        message: error instanceof Error ? error.message : String(error),
+        error: error instanceof Error ? error.message : String(error),
       });
     } finally {
       setLoading(false);
@@ -23,16 +23,19 @@ export default function SeedPage() {
   };
 
   return (
-    <div className="min-h-screen p-8 bg-gray-50">
+    <div className="min-h-screen p-8" style={{ backgroundColor: '#D0CEB5' }}>
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8">Database Seeding</h1>
+        <h1 className="text-3xl font-bold mb-8" style={{ color: '#274E13' }}>
+          Database Seeding
+        </h1>
 
         <button
           onClick={handleSeed}
           disabled={loading}
-          className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400"
+          className="text-white px-6 py-3 rounded-lg font-semibold disabled:bg-gray-400"
+          style={{ backgroundColor: loading ? undefined : '#274E13' }}
         >
-          {loading ? 'Seeding...' : 'Seed Global Categories'}
+          {loading ? 'Seeding...' : 'Seed 27 Master Categories'}
         </button>
 
         {result && (
@@ -46,7 +49,7 @@ export default function SeedPage() {
             <h2 className="text-xl font-bold mb-2">
               {result.success ? '✓ Success' : '✗ Error'}
             </h2>
-            <p className="text-lg mb-2">{result.message}</p>
+            <p className="text-lg mb-2">{result.error || JSON.stringify(result)}</p>
             {result.created !== undefined && (
               <div className="text-sm text-gray-600">
                 <p>Created: {result.created}</p>
