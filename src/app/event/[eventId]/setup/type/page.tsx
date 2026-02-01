@@ -97,7 +97,7 @@ export default async function SetupTypePage({ params }: SetupTypePageProps) {
 
               <div className="space-y-3">
                 <Link
-                  href={`/event/${eventId}/dashboard`}
+                  href={`/event/${eventId}/setup/categories`}
                   className="block w-full py-3 px-4 rounded-lg font-medium text-center transition-all duration-200"
                   style={{ 
                     backgroundColor: '#274E13',
